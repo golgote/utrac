@@ -1,0 +1,81 @@
+
+[executer]
+RunInTerminal=true
+
+[Project State]
+clean before build=false
+
+[filenumbers]
+0=72
+1=1
+2=54
+3=202
+4=38
+5=1
+6=295
+7=102
+8=183
+9=365
+10=8
+11=262
+12=58
+13=32
+
+[filemarkers]
+0=
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+8=
+9=
+10=
+11=
+12=
+13=
+
+[File View]
+filter.file.unmatch=*.so *.o *.a *.la
+filter.file.ignore.hidden=0
+filter.dir.ignore.hidden=0
+
+[replace_text]
+0=cs
+1=scan
+2=rating
+3=cs_eval
+4=script
+
+[find_text]
+0=update_prog
+1=malloc
+2=expend_lang
+3=alias
+4=language_id
+
+[filelist]
+0=/home/antoine/dev/utrac/ut_charset.c
+1=/home/antoine/dev/utrac/ut_charset.h
+2=/home/antoine/dev/utrac/ut_error.h
+3=/home/antoine/dev/utrac/ut_recognition1.c
+4=/home/antoine/dev/utrac/ut_recognition2.c
+5=/home/antoine/dev/utrac/ut_text.h
+6=/home/antoine/dev/utrac/ut_utils.c
+7=/home/antoine/dev/utrac/utrac.c
+8=/home/antoine/dev/utrac/utrac.h
+9=/home/antoine/dev/utrac/utrac_cmd.c
+
+[Project Tree]
+0=0
+1=0:0
+2=0:1
+3=0:2
+
+[Symbol Tree]
+0=2
+
+[File Tree]
+0=0

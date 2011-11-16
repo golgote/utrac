@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="file://localhost/home/antoine/doc/dtd/docbook.css" type="text/css"?>
+<!DOCTYPE book SYSTEM "file://localhost/home/antoine/doc/dtd/docbookx.dtd" [
+<!ENTITY Fdot "Fdot">
+]>
+<book>
+  <title>Utrac et Udrac</title>
+  <bookinfo>
+    <author>
+      <firstname>Antoine</firstname>
+      <surname>Calando</surname>
+      <affiliation>
+        <orgname>AllianceMCA</orgname>
+      </affiliation>
+    </author>
+  </bookinfo>
+  <chapter>
+    <title>Le contexte</title>
+    <para>Le développement des bibliothèques Utrac et Udrac s'inscrit dans celui, plus général, de la version 3 du logiciel SafeFax et de la partie « importation ». Cette partie est celle devant charger la base de donnée de l'utilisateur, normalement au format CSV, le but étant que le client n'aie pas à se soucier des différents problèmes pouvant se poser lors de l'importation de la base, et que les choix à prendre soient faits de la manière la plus automatique qui soit.</para>
+    <para>Les deux tâches les plus importantes, la reconnaissance d'encodage et celle du format exact de la base, ont donc conduit respectivement au développement d'Utrac et d'Udrac, qui ont été conçues comme des bibliothèques séparées afin de pouvoir être facilement réutilisées, en premier lieu par un utilitaire en ligne de commande pouvant servir dans un script.</para>
+  </chapter>
+  <chapter>
+    <title>Utrac</title>
+    <section>
+      <title>Description</title>
+      <para>Utrac signifie <emphasis>Universal Text Recognizer And Converter</emphasis>. C'est une bibliothèque permettant de charger un texte et de reconnaître son type de fin de ligne ainsi que son encodage. Elle est aussi utilisable dans un shell sous la forme d'un executable : <application>utrac</application>.</para>
+    </section>
+    <section>
+      <title>Caractéristiques</title>
+      <section>
+        <title>Reconnaissance de fin de ligne</title>
+        <para>Chaque ligne d'un fichier texte se termine par une séquence de caractère de contrôle indiquant la fin de la ligne. Cette séquence diffère en fonction du système, et correspond à :<simplelist>
+            <member>CR (Carriage Return, caractère 0xD) sous Macintosh,</member>
+            <member>LF (Line Feed, caractère 0xA) sous Unix,</member>
+            <member>CR + LF sous Windows.</member>
+          </simplelist>Il existe aussi certains cas où le fichier comprend un second type de fin de ligne, en plus du type CRLF. Il s'agit des bases de données Excel au format CSV qui utilise un caractère CR ou LF pour indiquer un saut de ligne dans un champ. </para>
+        <para>Pour la reconnaissance, Utrac examine la totalité du fichier et, en fonction des fins de ligne rencontrées, classe le fichier dans un des types suivant : CR, LF, CRLF, CRLF+CR, CRLF+LF, NON_STD. Le dernier type (non-standard) correspond à un fichier possédant plusieurs types différents de fin de ligne.</para>
+        <para>Bien entendu, Utrac permet aussi la conversion vers un des types de fin de ligne précédant.</para>
+      </section>
+      <section>
+        <title>Reconnaissance d'encodage</title>
+        <para>Un encodage (ou jeu de caractère) est une table de translation mettant en correspondance une série d'octets (ou de séquences d'octets) et de lettres, de chiffres, de signes de ponctuation, etc... L'encodage le plus connu est l'ASCII (American Standard Code for Information Interchange) qui couvre 128 valeurs. Il permet de coder des caractères de contrôle (fin de ligne, tabulation...), les 26 lettres majuscules et minuscules de l'alphabet latin (sans les accents ou cédilles), les chiffres de 0 à 9, ainsi que les signes de ponctuation usuels et quelques symboles mathématiques usuels. Il est donc insuffisant pour être utilisé pour des langues comme le français, ou, a fortiori, pour des langues utilisant un alphabet différent. </para>
+        <para>Pour cela ont été créé plusieurs autres jeux de caractères permettant de coder d'autres langues. La plupart couvrent approximativement 256 caractères, dont les 128 premiers correspondent à l'ASCII. Ces jeu de caractères dépendant bien entendu de la langue, mais aussi du système :<simplelist>
+            <member>sous Unix sont utilisés les encodages ISO-8859-1 à ISO-8859-16 (certains étant appelés Latin1 à Latin 10),</member>
+            <member>sous MSDOS, ce sont les encodages CP437, CP7xx et CP8xx,</member>
+            <member>sous Windows, les encodages CP1250 à CP1258 sont assez proches des ISO-8859-xx,</member>
+            <member>sous Macintosh, la série d'encodage est MacRoman, MacGreek, MacHebrew...</member>
+          </simplelist>Ces encodages ont été intensivement utilisés depuis des années, mais ils devraient être bientôt remplacé par l'Unicode à cause des problèmes de compatibilité qu'ils génèrent : il est malheureusement trop fréquent de constater dans un texte que tous les caractères accentués sont remplacés par des signes incompréhensibles.</para>
+        <para>L'Unicode est un « super encodage» comprenant la plupart des lettres et symboles qu'il peut exister dans le monde ; il contient plus d'un million d'entrées (jusqu'à 0x10FFFF) et est utilisé grâce à un code de transformation : les UTF-8, 16 ou 32. L'UTF-8 permet d'encoder un caractère sur un ou plusieurs octets selon le caractère ; il possède une semi compatibilité avec l'ASCII, ce qu'il fait qu'il est le plus utilisé pour l'encodage de fichier. Les UTF-16 et 32 encodent un caractère sur 2 ou 4 octets et présente l'avantage de ne pas avoir de caractères de taille variable (sauf l'UTF-16 dans quelques rares cas), ils sont donc plus utilisés en interne.</para>
+        <para>Utrac permet la reconnaissance de tous les jeux de caractères mono-octets dérivés de l'ASCII. Il suffit pour cela que la table d'équivalence entre ce jeu de caractère et l'Unicode fasse partie du fichier de configuration de Utrac. Utrac reconnaît aussi l'Unicode sous sa forme la plus courante : l'UTF-8. </para>
+        <para>Il est prévu aussi que la reconnaissance de jeu de caractères 7 bits (quoted-printable, HTML...) soit ajoutée dans une prochaine version de Utrac.</para>
+        <para>Enfin, Utrac permet la conversion vers n'importe lequel des encodages supportés.</para>
+      </section>
+      <section>
+        <title>Fonctionnalités diverses</title>
+        <para>En plus de la reconnaissance et la conversion de fins de ligne et de jeu de caractères, Utrac présente quelques fonctionnalités supplémentaires :<simplelist>
+            <member>chargement du fichier en mémoire ;</member>
+            <member>reconnaissance de fichiers binaires : une trop forte proportion de caractères de contrôle normalement inemployés range le fichier comme binaire ;</member>
+            <member>intégration d'une barre de progression : l'appel régulier d'une fonction, définie par le développeur, à l'intérieur de chaque boucle (chargement, reconnaissance, conversion) permet la réactualisation de la barre ;</member>
+            <member>interruption du traitement : l'appel à la fonction décrite précédemment retourne un code permettant d'interrompre le traitement d'un fichier ;</member>
+          </simplelist></para>
+      </section>
+    </section>
+    <section>
+      <title>Algorithmes utilisés</title>
+      <para>La détection de type de fin de ligne étant relativement simple à effectuer, elle ne sera que brièvement décrite : le fichier est analysé caractère par caractère, et est classé en fonction de la première séquence de fin de ligne rencontrée. Si une fin de ligne différente apparaît par la suite, elle permet d'affiner la sélection (CRLF+CR ou CRLF+LF) ou de l'invalider et la rendre "non standard" (CR+LF).</para>
+      <para>Concernant l'encodage, plusieurs algorithmes sont utilisés suivant le type de l'encodage : 7 bits (ASCII), 8 bits (extensions ASCII) ou multi-octets (UTF-8).</para>
+      <para>Le plus simple est l'ASCII, car il suffit de tester tous les caractères du fichier pour tester s'il existe des caractères 8 bits. En pratique, la distribution fréquentielle est calculée après le chargement, il n'y a alors plus besoin d'analyser la totalité du fichier, mais juste la distribution des caractères 128 à 255.</para>
+      <para>L'UTF-8 reste aussi simple a détecter du fait de ses règles d'encodage strictes : les caractères supérieurs à 127 sont codés en une séquence de plusieurs octets dont les premiers bits sont positionnés de manière particulière. Si le texte possède des caractères 8 bits et pourtant aucune erreur vis à vis des règles d'encodage UTF-8, on peut en déduire qu'il s'agit d'UTF-8, car la probabilité de n'avoir aucune erreur avec un autre encodage est extrêmement faible.</para>
+      <para>Les encodages les plus difficiles à déterminer sont ceux sur un seul octet dérivés de l'ASCII : ISO-8851-x, CP125x, CP8xx, encodages Mac... La différenciation entre ces différents encodages passe obligatoirement par la signification de chaque caractère. La méthode utilisée consiste a prendre chaque caractère du texte entre 128 et 255 (la partie variable) et à le comparer avec les caractères précédents et suivants en fonction de son type, et ceci pour chaque encodage à tester. Suivant le résultat, l'encodage reçoit un certain nombre de points, qui seront totalisés après que tous les caractères étendus aient été analysés dans tous les encodages. L'encodage recevant le plus de points sera choisi comme le meilleur encodage.</para>
+      <para>Pour un peu plus de clarté, voici quelques exemples de séquences permettant de noter un encodage, si le caractère à tester est : <simplelist>
+          <member>une majuscule précédée d'un délimiteur et suivie d'une lettre, ou précédée d'une majuscule ;</member>
+          <member>une minuscule précédée ou suivie d'une minuscule, ou précédée d'une majuscule mais non suivie d'une autre majuscule ;</member>
+          <member>une marque (accent sur une lettre) précédée ou suivie d'une lettre ;</member>
+          <member>un caractère de contrôle (il s'agit alors d'un malus) ;</member>
+          <member>un signe monétaire précédé ou suivi d'un nombre, ou précédé d'un nombre puis d'un délimiteur ;</member>
+          <member>un délimiteur séparant deux caractères de même type, ou répété plusieurs fois ;</member>
+          <member>un symbole fermant (parenthèse, crochet...) suivant son équivalant ouvrant ;</member>
+          <member>un caractère du même alphabet que les caractères précédent ou suivant, a fortiori si il s'agit d'un alphabet non latin.</member>
+        </simplelist>Ce moyen de reconnaissance n'est cependant pas totalement fiable. Il permet de différencier aisément entre des jeux de caractères Windows, Dos, Unix, Mac pour une même langue, mais la sélection du bon encodage est plus difficile lorsque sont comparés des jeux de caractères du même système mais de langues différentes. Par exemple, le mot « sûr » en ISO-8859-1 donnera « sűr » en ISO-8859-2 : les deux encodages auront la même note et il ne sera pas possible de les départager. </para>
+      <para>Il existe aussi des cas pires où le mauvais encodage remporte le plus de points : « REALISAT° » en ISO-8859-1 donnera « REALISATḞ » (F avec un point au dessus) en ISO-8859-14. La seconde possibilité remportera plus de points, car le signe ° n'est pas employé dans son sens normal mais pour signifier une abréviation.</para>
+      <para>Ces problèmes peuvent être résolus en ajoutant dans le fichier de configuration la liste des langues couvertes par chaque encodage. L'utilisateur de la bibliothèque doit alors indiquer sa langue lors de l'initialisation, et chaque encodage couvrant la langue sélectionnée bénéficiera d'un bonus, permettant de le surclasser par rapport aux autres encodages.</para>
+      <para>Il y a cependant des cas où retrouver le bon encodage n'est pas possible :<simplelist>
+          <member>Le texte a été écrit de tel manière qu'il ne peut pas être reconnu par Utrac ; « FAçON » (ISO-8859-1) sera plutôt vu comme « FAÁON » (MacRoman). Ce problème peut être fréquent sous Windows car il n'est pas possible d'insérer au clavier un caractère majuscule accentué ou avec cédille, et il arrive que l'utilisateur préfère insérer une minuscule.</member>
+          <member>Le texte a subit une conversion de jeu de caractère incorrecte (par exemple de CP850 vers MacRoman pour un texte en CP1252). Il est alors très difficile de déterminer quelle a été cette conversion après coup pour l'effectuer en sens inverse.</member>
+        </simplelist></para>
+    </section>
+  </chapter>
+  <chapter>
+    <title>Udrac</title>
+    <section>
+      <title>Description</title>
+      <para>Udrac signifie Universal Database Recognizer And Converter. C'est une bibliothèque permettant de charger une base de donnée texte et de reconnaître son format. Elle est aussi utilisable dans un shell sous la forme d'un executable : udrac.</para>
+      <para>Elle utilise la bibliothèque Utrac, et donc reconnaît en plus les fin de ligne et le jeu de caractère.</para>
+      <para>L'adjectif « Universal » du nom est un tantinet exagéré, car les formats reconnus sont uniquement du type CSV (Comma Separated Values) avec comme délimiteur de champs le point virgule, l'espace ou la tabulation.</para>
+    </section>
+    <section>
+      <title> Caractéristiques</title>
+      <para>Udrac analyse une base de donnée de type CSV (ou dérivés) afin d'en déterminer les particularités. La base est d'abord analysée avec Utrac pour déterminer le type des fins de ligne et le jeu de caractère (voir la documentation de Utrac).</para>
+      <para>Les caractéristiques suivantes propres à la base sont reconnues : <simplelist>
+          <member>le type de délimiteur : point virgule, espace ou tabulation ; l'utilisateur peut cependant préciser un autre caractère ;</member>
+          <member>le nombre de champs par ligne ;</member>
+          <member>l'éventuel présence d'une ligne d'en-tête en début de fichier contenant le titre des différentes colonnes ;</member>
+          <member>l'utilisation de guillemets autour de chaque champ, ou seulement autour des champs comprenant des caractères spéciaux ;</member>
+          <member>l'utilisation de contre-oblique («\») avant chaque caractère spécial ;</member>
+          <member>la présence de délimiteurs inutiles (espaces ou tabulations) en début ou fin de ligne ;</member>
+        </simplelist>L'analyse effectuée peut tolérer certaines erreurs, c'est-à-dire, par exemple, des délimiteurs manquants ou supplémentaires.</para>
+      <para>Une fonctionnalité a rajouter est la reconnaissance de fin de ligne au milieu d'un champ encadré par des guillemets.</para>
+    </section>
+    <section>
+      <title>Algortihme utilisé</title>
+      <para>L'analyse de la base consiste à compter dans plusieurs tableaux (un par type de délimiteur) le nombre de ligne en fonction du nombre de délimiteur et des caractéristiques retenues pour le comptage des délimiteurs. À la fin du comptage, la valeur la plus haute du tableau est retenue, et l'on déduit des indices de cette valeur les caractéristiques de la base.</para>
+      <para>Les caractéristiques de la base à prendre en compte sont les suivantes : <simplelist>
+          <member>ne pas compter les délimiteurs entre guillemets,</member>
+          <member>ne pas compter les délimiteurs après une contre-oblique,</member>
+          <member>ne pas compter les délimiteurs en début de ligne (pour l'espace ou la tabulation),</member>
+          <member>ne pas compter les délimiteurs en fin de ligne (pour l'espace ou la tabulation).</member>
+        </simplelist>Ces caractéristiques se combinent pour former un nombre binaire où un bit à 1 signifie que la caractéristique est prise en compte. Nous aurons donc un tableau d'une largeur de 16 pour l'espace et la tabulation, ou de 4 pour le point virgule.</para>
+      <para>Voici comme exemple le tableau pour le point virgule après l'analyse d'un fichier.<informaltable frame="all">
+          <tgroup cols="5" colsep="1" rowsep="1">
+            <thead>
+              <row>
+                <entry></entry>
+                <entry>0000</entry>
+                <entry>0001</entry>
+                <entry>0010</entry>
+                <entry>0011</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry align="center">0:</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+              </row>
+              <row>
+                <entry>1:</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+              </row>
+              <row>
+                <entry>2:</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+              </row>
+              <row>
+                <entry>3:</entry>
+                <entry>0</entry>
+                <entry>1</entry>
+                <entry>0</entry>
+                <entry>1</entry>
+              </row>
+              <row>
+                <entry>4:</entry>
+                <entry>7</entry>
+                <entry>6</entry>
+                <entry>9</entry>
+                <entry>8</entry>
+              </row>
+              <row>
+                <entry>5:</entry>
+                <entry>2</entry>
+                <entry>2</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+              </row>
+              <row>
+                <entry>6:</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+              </row>
+              <row>
+                <entry>7:</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0 </entry>
+              </row>
+              <row>
+                <entry>8:</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0</entry>
+                <entry>0 </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>La valeur la plus grande du tableau est 9 : elle correspond à 4 point-virgules et au nombre binaire 10, ce qui correspond à ne pas considérer les guillemets comme encadrant des champs, c'est-à-dire qu'un point-virgule entre guillemet reste un délimiteur (bit 0), mais à compter les contre-obliques comme caractère d'échappement (bit 1). Si l'on comptait les point-virgules suivant les contre-oblique (colonne 0000), nous aurions 7 lignes de 4 point-virgules et 2 lignes de 5 point-virgules.</para>
+      <para>Si les valeurs maximales des tableaux pour les espaces ou les tabulations ne sont pas supérieures à celle pour les point-virgules (en faisant abstraction des valeurs sur la première ligne, représentant celles sans délimiteur), c'est donc le point-virgule qui sera choisi comme délimiteur, avec une valeur de 5 champs par ligne.</para>
+      <para>La reconnaissance des guillemets comme encadreurs de champ doit aussi se faire par un autre moyen. En effet, le rôle particulier des guillemets ne peut être détecté avec la méthode précédente que si un délimiteur se trouve dans un champ. Si les guillemets sont placés autour de tous les champs, ou autour de champs possédant d'autres guillemets doublés (ce qui justifierait qu'ils soient reconnus comme encadreurs de champ), une variable adéquate est incrémentée lorsqu'ils sont rencontrés dans l'analyse, puis cette variable est comparée au nombre de guillemets existant dans la base, afin de déterminer si les guillemets sont utilisés comme encadreurs ou font simplement parti des champs.</para>
+    </section>
+  </chapter>
+</book>

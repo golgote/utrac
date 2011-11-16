@@ -1,0 +1,89 @@
+Index: ut_utils.c
+===================================================================
+--- ut_utils.c	(revision 1)
++++ ut_utils.c	(working copy)
+@@ -34,6 +34,8 @@
+ #include <fcntl.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <stdint.h>
++#include <unistd.h>
+ #include <string.h>
+ #include <errno.h>
+ #include <limits.h> //for SSIZE_MAX
+@@ -81,7 +83,7 @@
+ 
+ 	if(code!=f_stat.st_size)
+ 		{
+-		fprintf(stderr,"Can't read(return %i) file %s (%i bytes) : (%s)\n",code,filename,f_stat.st_size,strerror(errno));
++		fprintf(stderr,"Can't read(return %i) file %s (%lu bytes) : (%s)\n",code,filename, (unsigned long)f_stat.st_size,strerror(errno));
+ 		exit(-1);
+ 		}
+ 
+@@ -92,7 +94,7 @@
+ 
+ 	if (close(fd))
+ 		{
+-		fprintf(stderr,"error on close file %s : (%s)\n",code,filename,strerror(errno));
++		fprintf(stderr,"error on close file %s : (%s)\n",filename,strerror(errno));
+ 		exit(-1);
+ 		}
+ 
+@@ -370,8 +372,8 @@
+  *       of several of the popular FDDI "MAC" chips.
+  */
+ 
+-unsigned long ut_crc32(unsigned short data, unsigned long crc_in) {
+-	unsigned long  crc;
++uint32_t ut_crc32(unsigned short data, uint32_t crc_in) {
++	uint32_t crc;
+ 
+ 	if (!ut_crc32_table[1]) {
+ 		int i, j; unsigned long c;
+Index: utrac.h
+===================================================================
+--- utrac.h	(revision 1)
++++ utrac.h	(working copy)
+@@ -31,6 +31,7 @@
+ #define _UTRAC_H_
+ 
+ #include <sys/types.h>
++#include <stdint.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
+ 
+@@ -191,7 +192,7 @@
+ 
+ bool ut_update_progress (struct UtText *, unsigned long, bool);
+ 
+-unsigned long ut_crc32 (unsigned short , unsigned long);
++uint32_t ut_crc32 (unsigned short , uint32_t);
+ 
+ void ut_print_binary (unsigned long src);
+ UtCode ut_debug_text (struct UtText *);
+Index: debug.h
+===================================================================
+--- debug.h	(revision 1)
++++ debug.h	(working copy)
+@@ -78,7 +78,7 @@
+ 	#define ASS(expr) {if(!(expr)) \
+ 			fprintf(stderr, "\nDEBUG %s:%d: *** Assertion "  #expr  " failed! *** \n", __FILE__, __LINE__); }
+ 	#define ASS_A(expr, msg, ...) 	{if(!(expr)) \
+-			fprintf(stderr, "\nDEBUG %s:%d: *** Assertion "  #expr  " failed!" msg " *** \n", __FILE__, __LINE__, __VA_ARGS__); }
++			fprintf(stderr, "\nDEBUG %s:%d: *** Assertion "  #expr  " failed!" msg " *** \n", __FILE__, __LINE__, ## __VA_ARGS__); }
+ #else
+ 	//#define   WARN(msg) {}
+ 	#define WARN(msg, ...) {}
+Index: Makefile
+===================================================================
+--- Makefile	(revision 1)
++++ Makefile	(working copy)
+@@ -22,7 +22,7 @@
+ CC = gcc
+ 
+ #release :
+-&éCFLAGS = -Wall -O2 -DDEBUG
++CFLAGS = -Wall -O2 -DDEBUG
+ 
+ # debug
+ #CFLAGS = -Wall -g -DDEBUG

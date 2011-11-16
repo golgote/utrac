@@ -1,0 +1,32 @@
+Version 0.3.2
+- utilisation de autotools (Stéphane KLEIN)
+
+Version 0.3.1
+- Arrangement des sources pour compiler sous MacOSX
+
+Version 0.3.0
+- ut_convert(src, dst) can be call with dst=NULL (converted text will be put back in src).
+- UtLangSys::code is an array of char[2] (problems with gcc4 when it was a short?!?)
+- Bug with -L option corrected
+- option -i added (and older -i changed to -d, and older -d to -z!), which give info on the file
+- Bug during eol_pass concerning alt_eol corrected.
+- Some doxygen doc written.
+- Bug, happening when ut_load() is not used , corrected.
+
+Version 0.3rc
+- KOI-R and KOI-U charsets added.
+- Some changes in the API, especially stuff related to the progress callback.
+- Bugs corrected.
+- Man page added.
+- Option -a added, which display all the extended characters in each different charset.
+- Error messages added in english and french
+
+
+
+Version 0.2 - 2 December 2004
+- API rewritten
+- Some bugs corrected (and may be some added)
+- Documentation obsolete, need to be rewritten
+
+Version 0.1 - 20 October 2004
+- First release

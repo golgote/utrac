@@ -1,0 +1,24 @@
+Utrac 0.1
+=========
+
+Soon:
+- Remove first half of each charset in charset.dat file (ascii!) and add
+correspondant code.
+- Add an option to print a list of each extended character in each charset
+that is used in the file
+- port utrac to windows and mac
+- Improve installation
+
+
+Later:
+- charsets.dat file should be in source code and not loaded
+- The charmaps should even be extracted from the system (with iconv for example)
+- Add real conversion to ASCII (é->e, æ->ae, etc...)
+- Manage other charsets : UTF-16, 32 and 7, html entites (&#), quoted printable...
+- Improve detection algorithm (manage vowels/consonant: for instance 3 vowels
+are unlikely)
+- Accept a directory as input file, and recognize/convert the name of its files.
+- Add a language recognition based on letter frequency to do a second selection.
+
+
+- Lot of other things to do!

@@ -1,0 +1,120 @@
+
+.\" Man page for Utrac 2005
+.TH UTRAC "1" "January 2005" "Utrac 0.3" "Alliance MCA"
+
+
+.SH NAME
+utrac \- recognize and convert charset and end-of-line of text files
+
+
+.SH SYNOPSIS
+.B utrac
+[\fIOPTION\fR] [\fIFILE\fR]
+
+.SH DESCRIPTION
+Utrac is a tool (and a library) that recognize the charset and the end of line
+type used in a text file. It can also convert it. In case of 8bits charsets,
+recognition is not sure, so it can also assist the user to choose the correct
+charset, for instance by filtering the text and displaying only lines that
+matter.
+
+.SH OPTIONS
+.PP
+With no FILE, read standard input. With no OPTION, recognize and write converted
+text to standard output.
+
+.PP
+.TP
+\fB\-p\fR, \fB\-\-print-charset\fR
+Print the name of the charset that suits best the input file.
+
+.TP
+\fB\-P\fR, \fB\-\-print-all-charset\fR
+Print ranked list of charsets.  The first column is the mark with locale bonus
+(language and system), the second is the mark brut, the third is the checksum of
+all extended character (to know which charsets produce the same results) and the
+fourth is the charset name (on the same line if their mark with bonus and their
+checksum are identical).
+.br
+If the recognition is sure (ASCII or UTF-8),
+print only one name.
+
+.TP
+\fB\-f\fR, \fB\-\-from\fR
+Force input charset (disable recognition) and/or EOL. For instance, "UTF-8/CRLF".
+
+.TP
+\fB\-t\fR, \fB\-\-to\fR
+Select output charset and/or EOL. See above.
+
+.TP
+\fB\-L\fR, \fB\-\-language\fR
+Select language. All charsets that fit this language will get a bonus during
+recognition. If none specified, \fBLC_*\fR variables are used.
+.TP
+\fB\-S\fR, \fB\-\-system\fR
+Select system. All charsets that fit this language will get a bonus during
+recognition.
+
+.TP
+\fB\-x\fR, \fB\-\-ext-chars\fR
+Print lines with extended characters (try to print each
+extended character not more than once).
+
+.TP
+\fB\-d\fR, \fB\-\-distribution\fR
+Print distribution, i.e. the count of each 8bits character.
+
+.TP
+\fB\-a\fR, \fB\-\-all-ext-chars\fR
+Print each extended character of the file in each different charset (UTF-8
+output is recommended).
+
+.TP
+\fB\-c\fR, \fB\-\-colors\fR
+(with -x or -a) Use color.
+
+.TP
+\fB\-b\fR, \fB\-\-bar\fR
+Display a progress bar.
+
+.TP
+\fB\-i\fR, \fB\-\-info\fR
+Print default/chosen parameters.
+
+.TP
+\fB\-l\fR, \fB\-\-list\fR
+List charsets/eol/languages/systems.
+.TP
+
+\fB\-h\fR, \fB\-\-help\fR
+Print some help.
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print version.
+
+.SH FILES
+.TP
+\fBcharset.dat\fR
+This file should be located in \fB/usr/local/share/utrac/\fR or
+\fB/usr/share/utrac/\fR. It contains informations about charsets and their
+related charmap. If you want to add new charsets (they must be 8bits and ASCII
+compatible), check the script  \fBmerge.pl\fR in Utrac source directory.
+
+.SH BUGS
+Utrac is still a beta version, so you can expect to find some bugs...
+Please report them to <antoine@alliancemca.net>. If you have a text file
+that is not well recognize by Utrac, please send it to improve the
+recognition algorithm.
+
+.SH AUTHOR
+Written by Antoine Calando <antoine@alliancemca.net>.
+
+.SH COPYRIGHT
+Copyright \(co 2004 Alliance MCA.
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+.SH SEE ALSO
+You can find more documentation from http://utrac.sourceforge.net

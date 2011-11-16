@@ -1,0 +1,7 @@
+
+For their contributions, thanks to:
+
+ Morad Igmir (Perl script which generates the charsets.dat file)
+ Emmanuel Crombez (Reading the source, correcting some bugs, giving some ideas)
+ Alain Portal (Correcting the man page, and some other comments)
+ Pierre-Hugues Husson (Bug happenning when compiling with gcc4)

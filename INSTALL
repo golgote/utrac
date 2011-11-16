@@ -1,0 +1,14 @@
+UTRAC INSTALLATION
+==================
+
+Warning: Only tested with Slackware linux!
+
+
+Just type :
+
+> make
+
+Edit the makefile, then
+
+> su
+> make install
