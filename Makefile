@@ -22,8 +22,8 @@
 CC = gcc
 
 #release :
-CFLAGS = -Wall -O2 -DDEBUG
-# Linux : CFLAGS = -Wall -O2 -DDEBUG -fPIC
+# CFLAGS = -Wall -O2 -DDEBUG
+CFLAGS = -Wall -O2 -DDEBUG -fPIC
 
 # debug
 #CFLAGS = -Wall -g -DDEBUG
@@ -43,7 +43,7 @@ CHARMAPS_FILE = charsets.dat
 all: lib utrac
 
 clean:
-	rm -f  *.o *.a testimport *.bb *.da *.bbg core utrac
+	rm -f  *.so *.o *.a testimport *.bb *.da *.bbg core utrac
 	
 force:	clean all
 
@@ -54,17 +54,27 @@ install: utrac
 	cp ./utrac ${BIN_PATH}
 	mkdir -p ${SHARE_PATH}
 	cp -f ${CHARMAPS_FILE} ${SHARE_PATH}
-	cp -f utrac.1 ${MAN_PATH}
+	cp -f ./utrac.h ${INC_PATH}
+	cp -f ./ut_charset.h ${INC_PATH}
+	cp -f ./ut_error.h ${INC_PATH}
+	cp -f ./ut_text.h ${INC_PATH}
 
 install-lib: lib
 	mkdir -p ${LIB_PATH}
 	cp libutrac.a ${LIB_PATH}
 	mkdir -p ${LIB_PATH}
 	cp libutrac.a ${LIB_PATH}
+	mkdir -p ${LIB_PATH}
+	cp libutrac.so ${LIB_PATH}
 	
 uninstall:
 	rm -f ${BIN_PATH}/utrac
+	rm -f ${INC_PATH}/utrac.h
+	rm -f ${INC_PATH}/ut_charset.h
+	rm -f ${INC_PATH}/ut_error.h
+	rm -f ${INC_PATH}/ut_text.h 
 	rm -f ${LIB_PATH}/libutrac.a
+	rm -f ${LIB_PATH}/libutrac.so
 	rm -f ${SHARE_PATH}/${CHARMAPS_FILE}
 	rmdir ${SHARE_PATH}
 
@@ -107,8 +117,12 @@ utrac: utrac_cmd.o libutrac.a
 
 
 ##### LIB #######
-lib: libutrac.a
+lib: libutrac.a libutrac.so
 
 libutrac.a: utrac.o ut_charset.o ut_utils.o ut_loading.o ut_recognition1.o ut_recognition2.o \
 	ut_conversion.o ut_messages.o
 	ar rus libutrac.a $?
+
+libutrac.so: utrac.o ut_charset.o ut_utils.o ut_loading.o ut_recognition1.o ut_recognition2.o \
+	ut_conversion.o ut_messages.o
+	$(CC) -shared -o $@ $^
